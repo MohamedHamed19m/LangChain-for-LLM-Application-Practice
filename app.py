@@ -33,10 +33,9 @@ chat:ChatGoogleGenerativeAI = ChatGoogleGenerativeAI(
 def get_completion(prompt, model=chat):
     messages = [{"role": "user", "content": prompt}]
     response = model.invoke(messages)
-    print("test ##",response.response_metadata)
     return response.content
 
-print(get_completion("What is 1+1?"))
+# print(get_completion("What is 1+1?"))
 
 # --------------------------
 # Prompt templates
@@ -56,51 +55,51 @@ customer_messages = prompt_template.format_messages(
     style=customer_style, text=customer_email
 )
 
-customer_response = chat(customer_messages)
-print(customer_response.content)
+# customer_response = chat.invoke(customer_messages)
+# print(customer_response.content)
 
-# # --------------------------
-# # Output parsers
-# # --------------------------
-# review_template = """For the following text, extract the following information:
+# --------------------------
+# Output parsers
+# --------------------------
+review_template = """For the following text, extract the following information:
 
-# gift: Was the item purchased as a gift for someone else? \
-# Answer True if yes, False if not or unknown.
+gift: Was the item purchased as a gift for someone else? \
+Answer True if yes, False if not or unknown.
 
-# delivery_days: How many days did it take for the product to arrive? \
-# If this information is not found, output -1.
+delivery_days: How many days did it take for the product to arrive? \
+If this information is not found, output -1.
 
-# price_value: Extract any sentences about the value or price, \
-# and output them as a comma separated Python list.
+price_value: Extract any sentences about the value or price, \
+and output them as a comma separated Python list.
 
-# Format the output as JSON.
+Format the output as JSON.
 
-# text: {text}
+text: {text}
 
-# {format_instructions}
-# """
+{format_instructions}
+"""
 
-# customer_review = """This leaf blower is pretty amazing. It has four settings:
-# candle blower, gentle breeze, windy city, and tornado.
-# It arrived in two days, just in time for my wife's anniversary present.
-# It's slightly more expensive than the others, but worth it!"""
+customer_review = """This leaf blower is pretty amazing. It has four settings:
+candle blower, gentle breeze, windy city, and tornado.
+It arrived in two days, just in time for my wife's anniversary present.
+It's slightly more expensive than the others, but worth it!"""
 
-# gift_schema = ResponseSchema(name="gift", description="Was the item purchased as a gift?")
-# delivery_days_schema = ResponseSchema(name="delivery_days", description="Days for delivery")
-# price_value_schema = ResponseSchema(name="price_value", description="Value/price statements")
+gift_schema = ResponseSchema(name="gift", description="Was the item purchased as a gift?")
+delivery_days_schema = ResponseSchema(name="delivery_days", description="Days for delivery")
+price_value_schema = ResponseSchema(name="price_value", description="Value/price statements")
 
-# response_schemas = [gift_schema, delivery_days_schema, price_value_schema]
-# output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
+response_schemas = [gift_schema, delivery_days_schema, price_value_schema]
+output_parser = StructuredOutputParser.from_response_schemas(response_schemas)
 
-# format_instructions = output_parser.get_format_instructions()
-# prompt = ChatPromptTemplate.from_template(review_template)
+format_instructions = output_parser.get_format_instructions()
+prompt = ChatPromptTemplate.from_template(review_template)
 
-# messages = prompt.format_messages(
-#     text=customer_review, format_instructions=format_instructions
-# )
+messages = prompt.format_messages(
+    text=customer_review, format_instructions=format_instructions
+)
 
-# response = chat(messages)
-# print("Raw output:", response.content)
+response = chat.invoke(messages)
+print("Raw output:", response.content)
 
-# output_dict = output_parser.parse(response.content)
-# print("Parsed:", output_dict)
+output_dict = output_parser.parse(response.content)
+print("Parsed:", output_dict)
